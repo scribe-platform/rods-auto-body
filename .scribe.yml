@@ -55,7 +55,7 @@ collections:
     view:
       primary: caption
       sort: order
-      fields: [caption, order]
+      fields: [image, caption, order]
     fields:
       - name: image
         label: Photo
