@@ -1,94 +1,124 @@
 ---
-import Base from '../layouts/Base.astro';
+import Site from '../layouts/Site.astro';
+import ServiceIcon from '../components/ServiceIcon.astro';
 import { url } from '../lib/base';
-import { getCollection, type CollectionEntry } from 'astro:content';
-import {
-  CATALOG_ACTIVE_FIELD,
-  CATALOG_COLLECTION,
-  CATALOG_LABEL,
-  CATALOG_PRICE_FIELD,
-  CATALOG_SORT_FIELD,
-  CATALOG_TITLE_FIELD,
-  SITE_NAME,
-} from '../site-config';
-import { formatPrice } from '../lib/catalog';
+import { getCollection } from 'astro:content';
 
-let featured: CollectionEntry<any>[] = [];
-if (CATALOG_COLLECTION) {
-  const entries = (await getCollection(CATALOG_COLLECTION as any)) as CollectionEntry<any>[];
-  const visible = CATALOG_ACTIVE_FIELD ? entries.filter((e) => e.data[CATALOG_ACTIVE_FIELD] !== false) : entries;
-  const sorted = CATALOG_SORT_FIELD
-    ? [...visible].sort((a, b) => (a.data[CATALOG_SORT_FIELD] < b.data[CATALOG_SORT_FIELD] ? -1 : 1))
-    : visible;
-  featured = sorted.slice(0, 3);
-}
+const services = (await getCollection('services')).sort(
+  (a, b) => (a.data.order ?? 0) - (b.data.order ?? 0),
+);
+const reviews = (await getCollection('reviews')).sort(
+  (a, b) => (a.data.order ?? 0) - (b.data.order ?? 0),
+);
+const stars = (n = 5) => '★'.repeat(n);
 ---
-<Base title="Home" description={`${SITE_NAME} — managed with Scribe.`}>
-  <section class="hero">
-    <span class="eyebrow">Locally owned &amp; operated</span>
-    <h1>A lawn you'll actually be proud of.</h1>
-    <p class="hero-sub">
-      {SITE_NAME} keeps yards mowed, fed, and looking sharp — so you don't have to think about it.
-    </p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href={url('/contact')}>Get a Free Quote</a>
-      {CATALOG_COLLECTION && (
-        <a class="btn btn-secondary" href={url(`/${CATALOG_COLLECTION}`)}>Browse {CATALOG_LABEL}</a>
-      )}
-    </div>
-  </section>
-
-  <section class="why-us">
-    <h2>Why homeowners choose us</h2>
-    <div class="card-grid">
-      <div class="card">
-        <h3>🚜 Reliable weekly service</h3>
-        <p>Same crew, same schedule, every week — no surprises.</p>
+<Site
+  title="Rod's Auto Body | Collision Repair in Lancaster, PA"
+  description="Rod's Auto Body has served Lancaster, PA for 30+ years with collision repair, paintless dent repair, and glass replacement. All insurance welcome. Walk-ins welcome, no appointment needed."
+  active="home"
+>
+  <section class="hero texture-panel">
+    <div class="container">
+      <div class="hero-content">
+        <span class="eyebrow">Lancaster, PA &middot; 30+ Years in Business</span>
+        <span class="stripe-mark on-dark" aria-hidden="true"><span class="bar"></span><span class="point"></span></span>
+        <h1>Collision Repair Done Right, the First Time</h1>
+        <p>From dents and scratches to full collision repair, Rod's Auto Body gets you back on the road. Every insurance company welcome &mdash; no appointment needed, walk-ins welcome.</p>
+        <div class="hero-actions">
+          <a href={url('/contact')} class="btn btn-primary">Get in Touch</a>
+          <a href="tel:7172855575" class="btn btn-outline">Call (717) 285-5575</a>
+        </div>
       </div>
-      <div class="card">
-        <h3>🌱 Healthy, green results</h3>
-        <p>Fertilization and weed control tailored to your lawn's needs.</p>
-      </div>
-      <div class="card">
-        <h3>💧 Full-service options</h3>
-        <p>From a simple mow to complete seasonal lawn care, we scale with you.</p>
+      <div class="hero-photos">
+        <img class="hero-photo hero-photo-back" src={url('/images/photos/605374-Sequoia.w1024.jpg')} alt="SUV repaired at Rod's Auto Body">
+        <img class="hero-photo hero-photo-front" src={url('/images/photos/605372-IMG_1090.jpg')} alt="Vehicle repaired at Rod's Auto Body">
       </div>
     </div>
+    <div class="skew-edge" style="background: var(--section-bg); bottom: -60px; height: 106px;"></div>
   </section>
 
-  {featured.length > 0 && (
-    <section class="teaser">
-      <h2>Popular {CATALOG_LABEL}</h2>
-      <div class="card-grid">
-        {featured.map((entry) => (
-          <a class="card" href={url(`/${CATALOG_COLLECTION}/${entry.id}`)}>
-            <h3>{entry.data[CATALOG_TITLE_FIELD] ?? entry.id}</h3>
-            {CATALOG_PRICE_FIELD && entry.data[CATALOG_PRICE_FIELD] != null && (
-              <p class="price">{formatPrice(entry.data[CATALOG_PRICE_FIELD])} <small>/ month</small></p>
-            )}
-          </a>
+  <div class="trust-bar">
+    <div class="container">
+      <div class="trust-item"><span class="dot"></span> All Makes &amp; Models Serviced</div>
+      <div class="trust-item"><span class="dot"></span> Every Insurance Company Welcome</div>
+      <div class="trust-item"><span class="dot"></span> Walk-Ins Welcome, No Appointment Needed</div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">What We Do</span>
+        <span class="stripe-mark" aria-hidden="true"><span class="bar"></span><span class="point"></span></span>
+        <h2>Our Services</h2>
+        <p>Full-service collision repair and support, all under one roof.</p>
+      </div>
+
+      <div class="services-grid">
+        {services.map((s) => (
+          <div class="service-card">
+            <div class="icon"><ServiceIcon name={s.data.icon} /></div>
+            <h3 set:html={s.data.cardTitle ?? s.data.title} />
+            <p>{s.data.shortDescription}</p>
+          </div>
         ))}
       </div>
-    </section>
-  )}
+    </div>
+  </section>
 
-  <p class="managed-note">This site is managed with Scribe. Read the <a href={url('/blog')}>blog</a> or <a href={url('/contact')}>get in touch</a>.</p>
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Our Work</span>
+        <span class="stripe-mark" aria-hidden="true"><span class="bar"></span><span class="point"></span></span>
+        <h2>Recent Vehicles</h2>
+        <p>A look at some of the vehicles that have come through our shop.</p>
+      </div>
 
-  <style>
-    .hero { text-align: center; padding: 32px 0 48px; }
-    .eyebrow { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.8rem; font-weight: 700; color: var(--green-700); }
-    .hero h1 { font-size: 2.4rem; margin: 12px 0; color: var(--green-900); }
-    .hero-sub { max-width: 520px; margin: 0 auto 24px; color: var(--ink-soft); }
-    .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-    .btn { display: inline-block; padding: 12px 24px; border-radius: 999px; font-weight: 700; text-decoration: none; }
-    .btn-primary { background: var(--green-700); color: white; }
-    .btn-secondary { background: white; color: var(--green-700); border: 1px solid var(--green-700); }
-    section.why-us, section.teaser { margin: 48px 0; }
-    section h2 { text-align: center; margin-bottom: 24px; }
-    .card-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-    .card { display: block; border: 1px solid var(--border); border-radius: 12px; padding: 20px; background: white; color: var(--ink); text-decoration: none; }
-    .card h3 { margin-top: 0; }
-    .price { font-weight: 700; color: var(--green-700); }
-    .managed-note { text-align: center; color: var(--ink-soft); font-size: 0.9rem; margin-top: 48px; }
-  </style>
-</Base>
+      <div class="gallery-grid gallery-bento">
+        <div class="gallery-item bento-main"><img src={url('/images/photos/605375-Jetta2.w1024.jpg')} alt="Vehicle serviced at Rod's Auto Body"></div>
+        <div class="gallery-item bento-wide"><img src={url('/images/photos/605373-IMG_0498.w1024.jpg')} alt="Vehicle serviced at Rod's Auto Body"></div>
+        <div class="gallery-item"><img src={url('/images/photos/605369-IMG_1224.jpg')} alt="Vehicle serviced at Rod's Auto Body"></div>
+        <div class="gallery-item"><img src={url('/images/photos/605371-IMG_0165.jpg')} alt="Vehicle serviced at Rod's Auto Body"></div>
+      </div>
+
+      <div class="gallery-cta">
+        <a href={url('/gallery')} class="btn btn-primary">View Full Gallery</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Reviews</span>
+        <span class="stripe-mark" aria-hidden="true"><span class="bar"></span><span class="point"></span></span>
+        <h2>What Our Customers Say</h2>
+        <p class="rating-summary"><span class="stars" aria-hidden="true">★★★★★</span> <strong>5.0</strong> from 90+ Google reviews</p>
+      </div>
+
+      <div class="reviews-grid">
+        {reviews.map((r) => (
+          <figure class="review-card">
+            <div class="stars" role="img" aria-label={`${r.data.rating ?? 5} out of 5 stars`}>{stars(r.data.rating ?? 5)}</div>
+            <blockquote>&ldquo;{r.data.quote}&rdquo;</blockquote>
+            <figcaption>{r.data.author} <span>{r.data.source ?? 'Google review'}</span></figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <div class="gallery-cta">
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=Rod%27s+Auto+Body+885+Ivy+Dr+Lancaster+PA" class="btn btn-primary" target="_blank" rel="noopener">Read More Reviews on Google</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section cta-band texture-panel">
+    <div class="container">
+      <h2>Need a Repair? Stop By &mdash; No Appointment Needed</h2>
+      <p>Walk-ins are always welcome at our Lancaster shop, Monday through Friday, 7AM&ndash;4PM.</p>
+      <a href="tel:7172855575" class="phone">(717) 285-5575</a>
+    </div>
+    <div class="skew-edge" style="background: var(--navy-dark);"></div>
+  </section>
+</Site>

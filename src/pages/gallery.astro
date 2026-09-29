@@ -1,0 +1,53 @@
+---
+import Site from '../layouts/Site.astro';
+import { url } from '../lib/base';
+import { getCollection } from 'astro:content';
+
+const photos = (await getCollection('gallery')).sort(
+  (a, b) => (a.data.order ?? 0) - (b.data.order ?? 0),
+);
+---
+<Site
+  title="Gallery | Rod's Auto Body"
+  description="See vehicles that have come through Rod's Auto Body in Lancaster, PA."
+  active="gallery"
+>
+  <section class="page-header texture-panel">
+    <div class="container">
+      <div class="breadcrumb"><a href={url('/')}>Home</a> / Gallery</div>
+      <span class="eyebrow">Our Work</span>
+      <span class="stripe-mark on-dark" aria-hidden="true"><span class="bar"></span><span class="point"></span></span>
+      <h1>Vehicle Gallery</h1>
+      <p>A look at some of the vehicles that have come through our shop.</p>
+    </div>
+    <div class="skew-edge" style="background: var(--white);"></div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="gallery-grid-full">
+        {photos.map((p, i) => (
+          <div class={i === 0 ? 'gallery-item featured' : 'gallery-item'}>
+            <img src={url(p.data.image)} alt={p.data.caption ?? "Vehicle serviced at Rod's Auto Body"}>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+    <button class="lb-close" aria-label="Close">&times;</button>
+    <button class="lb-prev" aria-label="Previous photo">&lsaquo;</button>
+    <img src="" alt="">
+    <button class="lb-next" aria-label="Next photo">&rsaquo;</button>
+  </div>
+
+  <section class="section cta-band texture-panel">
+    <div class="container">
+      <h2>Ready to Get Your Vehicle Looking Like This?</h2>
+      <p>Walk-ins are always welcome &mdash; no appointment needed, Monday through Friday, 7AM&ndash;4PM.</p>
+      <a href="tel:7172855575" class="phone">(717) 285-5575</a>
+    </div>
+    <div class="skew-edge" style="background: var(--navy-dark);"></div>
+  </section>
+</Site>

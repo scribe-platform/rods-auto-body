@@ -1,0 +1,20 @@
+---
+// Maps a service's `icon` select value to the exact inline SVG used in the
+// original site. Keep these in sync with the `icon` options in .scribe.yml.
+export interface Props {
+  name: 'collision' | 'dent' | 'glass' | 'rental' | string;
+}
+const { name } = Astro.props;
+---
+{name === 'collision' && (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 1 0-5.66 5.66L3 18v3h3l6.04-6.04a4 4 0 0 0 5.66-5.66l-2.83 2.83-2-2 2.83-2.83z"/></svg>
+)}
+{name === 'dent' && (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>
+)}
+{name === 'glass' && (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h18l-2 10H5L3 8z"/><path d="M8 8l-1.5 10M16 8l1.5 10M12 8v10"/></svg>
+)}
+{name === 'rental' && (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16V9a1 1 0 0 1 1-1h9l4 4h2a1 1 0 0 1 1 1v3"/><path d="M3 16h1m16 0h1M8 16h8"/><circle cx="7" cy="16.5" r="1.8"/><circle cx="17" cy="16.5" r="1.8"/></svg>
+)}

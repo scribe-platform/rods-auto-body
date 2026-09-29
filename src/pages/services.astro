@@ -1,0 +1,75 @@
+---
+import Site from '../layouts/Site.astro';
+import ServiceIcon from '../components/ServiceIcon.astro';
+import { url } from '../lib/base';
+import { getCollection, render } from 'astro:content';
+
+const services = (await getCollection('services')).sort(
+  (a, b) => (a.data.order ?? 0) - (b.data.order ?? 0),
+);
+const serviceDetails = await Promise.all(
+  services.map(async (s) => ({ data: s.data, Content: (await render(s)).Content })),
+);
+const fleet = (await getCollection('fleet')).sort(
+  (a, b) => (a.data.order ?? 0) - (b.data.order ?? 0),
+);
+---
+<Site
+  title="Services | Rod's Auto Body"
+  description="Collision repair, paintless dent repair, glass and windshield replacement, and car and van rentals at Rod's Auto Body in Lancaster, PA. Every insurance company welcome."
+  active="services"
+>
+  <section class="page-header texture-panel">
+    <div class="container">
+      <div class="breadcrumb"><a href={url('/')}>Home</a> / Services</div>
+      <span class="eyebrow">What We Do</span>
+      <span class="stripe-mark on-dark" aria-hidden="true"><span class="bar"></span><span class="point"></span></span>
+      <h1>Our Services</h1>
+      <p>Full-service collision repair and support, all under one roof &mdash; every insurance company welcome, all makes and models serviced.</p>
+    </div>
+    <div class="skew-edge" style="background: var(--white);"></div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      {serviceDetails.map((s) => (
+        <div class="service-detail">
+          <div class="icon"><ServiceIcon name={s.data.icon} /></div>
+          <div>
+            <h3 set:html={s.data.title} />
+            <s.Content />
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">While You Wait</span>
+        <span class="stripe-mark" aria-hidden="true"><span class="bar"></span><span class="point"></span></span>
+        <h2>Our Rental Fleet</h2>
+        <p>Available to keep you moving while we repair your vehicle.</p>
+      </div>
+
+      <div class="fleet-grid">
+        {fleet.map((f) => (
+          <div class="fleet-card">
+            <h4>{f.data.title}</h4>
+            <p>{f.data.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section cta-band texture-panel">
+    <div class="container">
+      <h2>Not Sure What You Need? Just Stop By</h2>
+      <p>Walk-ins are always welcome &mdash; no appointment needed, Monday through Friday, 7AM&ndash;4PM.</p>
+      <a href="tel:7172855575" class="phone">(717) 285-5575</a>
+    </div>
+    <div class="skew-edge" style="background: var(--navy-dark);"></div>
+  </section>
+</Site>

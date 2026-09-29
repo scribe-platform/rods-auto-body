@@ -1,0 +1,91 @@
+---
+import { url } from '../lib/base';
+
+export interface Props {
+  title: string;
+  description?: string;
+  active?: 'home' | 'services' | 'gallery' | 'about' | 'contact';
+}
+
+const { title, description, active } = Astro.props;
+const navClass = (key: Props['active']) => (active === key ? 'active' : undefined);
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{title}</title>
+  {description && <meta name="description" content={description} />}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href={url('/css/style.css')}>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="container">
+      <div class="topbar-item"><span>885 Ivy Dr, Lancaster, PA 17601</span></div>
+      <div class="topbar-item"><a href="tel:7172855575">(717) 285-5575</a></div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container">
+      <a href={url('/')} class="logo-link">
+        <img src={url('/images/rodautobody-logo.png')} alt="Rod's Auto Body logo">
+      </a>
+
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="main-nav">
+        <ul>
+          <li><a href={url('/')} class={navClass('home')}>Home</a></li>
+          <li><a href={url('/services')} class={navClass('services')}>Services</a></li>
+          <li><a href={url('/gallery')} class={navClass('gallery')}>Gallery</a></li>
+          <li><a href={url('/about')} class={navClass('about')}>About</a></li>
+          <li><a href={url('/contact')} class={navClass('contact')}>Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <slot />
+
+  <footer class="site-footer">
+    <div class="footer-stripe"></div>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-logo">
+          <img src={url('/images/rodautobody-logo-dark.png')} alt="Rod's Auto Body logo">
+          <p>Trusted collision repair in Lancaster, PA.</p>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href={url('/services')}>Services</a></li>
+            <li><a href={url('/gallery')}>Gallery</a></li>
+            <li><a href={url('/about')}>About</a></li>
+            <li><a href={url('/contact')}>Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Visit Us</h4>
+          <ul>
+            <li>885 Ivy Dr, Lancaster, PA 17601</li>
+            <li><a href="tel:7172855575">(717) 285-5575</a></li>
+            <li>Mon–Fri 7AM–4PM</li>
+            <li>Closed Sat–Sun</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">&copy; {new Date().getFullYear()} Rod's Auto Body. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src={url('/js/main.js')}></script>
+</body>
+</html>

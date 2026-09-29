@@ -1,0 +1,70 @@
+---
+import Site from '../layouts/Site.astro';
+import { url } from '../lib/base';
+---
+<Site
+  title="About | Rod's Auto Body"
+  description="Rod's Auto Body has served Lancaster, PA for over 30 years with collision repair, paintless dent repair, and glass replacement."
+  active="about"
+>
+  <section class="page-header texture-panel">
+    <div class="container">
+      <div class="breadcrumb"><a href={url('/')}>Home</a> / About</div>
+      <span class="eyebrow">Who We Are</span>
+      <span class="stripe-mark on-dark" aria-hidden="true"><span class="bar"></span><span class="point"></span></span>
+      <h1>About Rod's Auto Body</h1>
+      <p>Lancaster, PA's trusted name in collision repair for over 30 years.</p>
+    </div>
+    <div class="skew-edge" style="background: var(--white);"></div>
+  </section>
+
+  <section class="about-stats-band">
+    <div class="container">
+      <div class="about-stats">
+        <div class="about-stat">
+          <span class="num">30+</span>
+          <span class="label">Years in Business</span>
+        </div>
+        <div class="about-stat">
+          <span class="num">All</span>
+          <span class="label">Makes &amp; Models Serviced</span>
+        </div>
+        <div class="about-stat">
+          <span class="num">Every</span>
+          <span class="label">Insurance Company Welcome</span>
+        </div>
+        <div class="about-stat">
+          <span class="num">0</span>
+          <span class="label">Appointments Needed &mdash; Walk-Ins Welcome</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section about-story-section">
+    <div class="container">
+      <div class="about-story">
+        <div class="about-photo">
+          <img src={url('/images/photos/605373-IMG_0498.w1024.jpg')} alt="Vehicle repaired at Rod's Auto Body">
+        </div>
+        <div class="about-text">
+          <span class="eyebrow">Our Story</span>
+          <span class="stripe-mark" aria-hidden="true"><span class="bar"></span><span class="point"></span></span>
+          <h2>Everything Under One Roof</h2>
+          <p>Rod's Auto Body has been serving Lancaster, PA and the surrounding area for more than 30 years. We handle everything from minor dents and dings to full collision repair, glass replacement, and everything in between &mdash; all under one roof.</p>
+          <p>We service all makes and models and work with every insurance company, so no matter what you drive or who you're insured with, we can help get you back on the road. And because we know a repair can happen at the worst time, we offer rental cars and vans right here at the shop so you're never left without a ride.</p>
+          <p>No appointment needed &mdash; walk-ins are always welcome during business hours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section cta-band texture-panel">
+    <div class="container">
+      <h2>Come See Us Today</h2>
+      <p>Walk-ins are always welcome &mdash; no appointment needed, Monday through Friday, 7AM&ndash;4PM.</p>
+      <a href="tel:7172855575" class="phone">(717) 285-5575</a>
+    </div>
+    <div class="skew-edge" style="background: var(--navy-dark);"></div>
+  </section>
+</Site>
