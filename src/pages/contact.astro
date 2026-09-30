@@ -7,7 +7,7 @@ import { SITE_SLUG, CONTACT_COLLECTION, TURNSTILE_SITE_KEY } from '../site-confi
 // var at build time (same pattern as the template's ContactForm), falling
 // back to the production admin. An unset repo variable resolves to an empty
 // string, so treat empty the same as unset.
-const API_BASE = import.meta.env.PUBLIC_SCRIBE_API_URL || 'https://scribe.appkit.net';
+const API_BASE = import.meta.env.PUBLIC_SCRIBE_API_URL || 'https://scribe.weaverdigital.io';
 const submissionEndpoint = `${API_BASE}/api/submissions`;
 ---
 <Site
