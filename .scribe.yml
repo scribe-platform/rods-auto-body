@@ -3,6 +3,8 @@ siteName: Rod's Auto Body
 turnstileSiteKey: 0x4AAAAAAFHtLCWg1S7IznJp
 contactCollection: inquiries
 
+umamiWebsiteId: 8c74597f-f426-4246-9a75-414b8fe194bb
+umamiScriptUrl: https://analytics.weaverdigital.io/script.js
 collections:
   - name: services
     label: Services
