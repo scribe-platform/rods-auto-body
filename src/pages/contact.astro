@@ -63,7 +63,7 @@ const submissionEndpoint = `${API_BASE}/api/submissions`;
 
         <div>
           <h3>Send a Message</h3>
-          <form class="contact-form" id="contact-form" data-site={SITE_SLUG} data-collection={CONTACT_COLLECTION} data-endpoint={submissionEndpoint}>
+          <form class="contact-form" id="contact-form" data-site={SITE_SLUG} data-collection={CONTACT_COLLECTION} data-endpoint={submissionEndpoint} data-scribe-retry>
             <div class="form-group">
               <label for="name">Name</label>
               <input type="text" id="name" name="name" required>
@@ -98,6 +98,48 @@ const submissionEndpoint = `${API_BASE}/api/submissions`;
     var site = form.dataset.site;
     var collection = form.dataset.collection;
     var endpoint = form.dataset.endpoint;
+    var storageKey = 'scribe_pending_submission_' + site + '_' + collection;
+
+    // Last resorts only. The endpoint puts visitor-facing copy in the response
+    // body, so these two cover the cases where there is no body: the request
+    // never arrived, or it came back with nothing usable.
+    var UNREACHABLE = "We couldn't send that yet \u2014 it's saved and will retry.";
+    var GENERIC = 'Sorry, something went wrong sending your message. Please call (717) 285-5575 instead.';
+
+    function say(message) {
+      status.textContent = message;
+      status.classList.add('show');
+    }
+
+    function readPending() {
+      try { return JSON.parse(localStorage.getItem(storageKey)) || null; } catch (err) { return null; }
+    }
+    function savePending(payload) {
+      try { localStorage.setItem(storageKey, JSON.stringify(payload)); } catch (err) {}
+    }
+    function clearPending() {
+      try { localStorage.removeItem(storageKey); } catch (err) {}
+    }
+
+    // A non-2xx means the server answered and said why, which is a different
+    // thing from never reaching it. `answered` picks the message; `retryable`
+    // decides whether a later attempt could plausibly land.
+    function send(payload) {
+      var url = endpoint + '?site=' + encodeURIComponent(site) + '&collection=' + encodeURIComponent(collection);
+      return fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function (res) {
+        if (res.ok) return;
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          var error = new Error((body && body.error ? String(body.error).trim() : '') || GENERIC);
+          error.answered = true;
+          error.retryable = res.status >= 500;
+          throw error;
+        });
+      });
+    }
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -113,25 +155,46 @@ const submissionEndpoint = `${API_BASE}/api/submissions`;
       submitBtn.disabled = true;
       status.classList.remove('show');
 
-      var url = endpoint + '?site=' + encodeURIComponent(site) + '&collection=' + encodeURIComponent(collection);
-      fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-        .then(function (res) {
-          if (!res.ok) { throw new Error('Request failed'); }
+      send(payload)
+        .then(function () {
+          clearPending();
           form.reset();
-          status.textContent = "Thanks for reaching out! We'll get back to you shortly.";
-          status.classList.add('show');
+          say("Thanks for reaching out! We'll get back to you shortly.");
         })
-        .catch(function () {
-          status.textContent = 'Sorry, something went wrong sending your message. Please call (717) 285-5575 instead.';
-          status.classList.add('show');
+        .catch(function (err) {
+          // Never claim a success the server didn't give, and never paper over
+          // its message with ours.
+          if (err && err.answered) {
+            if (err.retryable) savePending(payload);
+            say(err.message);
+            return;
+          }
+          savePending(payload);
+          say(UNREACHABLE);
         })
         .finally(function () {
           submitBtn.disabled = false;
         });
     });
+
+    // Replay on the next page load, which is what makes the queue worth having.
+    (function retryPending() {
+      var pending = readPending();
+      if (!pending) return;
+      send(pending)
+        .then(function () {
+          clearPending();
+          say("Thanks for reaching out! We'll get back to you shortly.");
+        })
+        .catch(function (err) {
+          // Replaying a rejection (a validation error, a rate limit) on every
+          // page load would loop forever, so drop it and show what the server
+          // said. Anything else stays queued for next time.
+          if (err && err.answered && !err.retryable) {
+            clearPending();
+            say(err.message);
+          }
+        });
+    })();
   })();
 </script>
